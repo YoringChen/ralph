@@ -13,7 +13,7 @@ Create detailed Product Requirements Documents that are clear, actionable, and s
 ## The Job
 
 1. Receive a feature description from the user
-2. Ask 3-5 essential clarifying questions (with lettered options)
+2. **Use AskUserQuestion tool** to ask 3-5 essential clarifying questions
 3. Generate a structured PRD based on answers
 4. Save to `tasks/prd-[feature-name].md`
 
@@ -30,29 +30,47 @@ Ask only critical questions where the initial prompt is ambiguous. Focus on:
 - **Scope/Boundaries:** What should it NOT do?
 - **Success Criteria:** How do we know it's done?
 
-### Format Questions Like This:
+### How to Ask Questions:
 
+**Use the AskUserQuestion tool!** Do NOT present lettered options (A/B/C/D). Instead, ask open-ended or clear questions directly.
+
+Example question structure for AskUserQuestion:
 ```
-1. What is the primary goal of this feature?
-   A. Improve user onboarding experience
-   B. Increase user retention
-   C. Reduce support burden
-   D. Other: [please specify]
-
-2. Who is the target user?
-   A. New users only
-   B. Existing users only
-   C. All users
-   D. Admin users only
-
-3. What is the scope?
-   A. Minimal viable version
-   B. Full-featured implementation
-   C. Just the backend/API
-   D. Just the UI
+questions: [
+  {
+    question: "What is the primary goal of this feature?",
+    header: "Goal",
+    options: [
+      { label: "Improve user onboarding", description: "Make it easier for new users to get started" },
+      { label: "Increase user retention", description: "Keep users coming back more often" },
+      { label: "Reduce support burden", description: "Decrease the number of support requests" },
+      { label: "Other", description: "Please specify a different goal" }
+    ]
+  },
+  {
+    question: "Who is the target user for this feature?",
+    header: "Target Users",
+    options: [
+      { label: "New users only", description: "Focus on first-time users" },
+      { label: "Existing users only", description: "For current active users" },
+      { label: "All users", description: "Everyone using the product" },
+      { label: "Admin users only", description: "Just for administrators" }
+    ]
+  },
+  {
+    question: "What scope should we implement?",
+    header: "Scope",
+    options: [
+      { label: "Minimal viable version", description: "Just the core essentials" },
+      { label: "Full-featured implementation", description: "Complete with all bells and whistles" },
+      { label: "Backend/API only", description: "Just the server side" },
+      { label: "UI only", description: "Just the frontend interface" }
+    ]
+  }
+]
 ```
 
-This lets users respond with "1A, 2C, 3B" for quick iteration. Remember to indent the options.
+Each question should be a single, clear question. Use `multiSelect: false` unless the user can select multiple options.
 
 ---
 
@@ -233,8 +251,8 @@ Add priority levels to tasks so users can focus on what matters most. Tasks can 
 
 Before saving the PRD:
 
-- [ ] Asked clarifying questions with lettered options
-- [ ] Incorporated user's answers
+- [ ] Used AskUserQuestion tool to ask clarifying questions
+- [ ] Incorporated user's answers from the AskUserQuestion response
 - [ ] User stories are small and specific
 - [ ] Functional requirements are numbered and unambiguous
 - [ ] Non-goals section defines clear boundaries

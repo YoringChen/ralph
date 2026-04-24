@@ -2,18 +2,40 @@
 
 You are an autonomous coding agent working on a software project.
 
+
+## Status Updates (IMPORTANT)
+
+ALWAYS keep the user informed of what you're doing by updating `.ralph-status` file in the current working directory.
+
+Update `.ralph-status` BEFORE starting each major step with this format:
+```
+Current story: [Story ID] - [Story Title]
+Last activity: $(date)
+Current step: [What you're about to do]
+```
+
+Examples:
+- Before reading PRD: `Current step: Reading prd.json...`
+- Before checking branch: `Current step: Checking git branch...`
+- Before implementing: `Current step: Implementing [Story ID] - [Story Title]...`
+- Before running tests: `Current step: Running quality checks...`
+- Before committing: `Current step: Committing changes...`
+- Before updating PRD: `Current step: Marking story as complete...`
+
 ## Your Task
 
-1. Read the PRD at `prd.json` (in the same directory as this file)
-2. Read the progress log at `progress.txt` (check Codebase Patterns section first)
-3. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main.
-4. Pick the **highest priority** user story where `passes: false`
-5. Implement that single user story
-6. Run quality checks (e.g., typecheck, lint, test - use whatever your project requires)
-7. Update AGENTS.md files if you discover reusable patterns (see below)
-8. If checks pass, commit ALL changes with message: `feat: [Story ID] - [Story Title]`
-9. Update the PRD to set `passes: true` for the completed story
-10. Append your progress to `progress.txt`
+1. Update `.ralph-status` with current step
+2. Read the PRD at `prd.json` (in the same directory as this file)
+3. Read the progress log at `progress.txt` (check Codebase Patterns section first)
+4. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main.
+5. Pick the **highest priority** user story where `passes: false`
+6. Update `.ralph-status` with the current story
+7. Implement that single user story (update `.ralph-status` at major steps)
+8. Run quality checks (e.g., typecheck, lint, test - use whatever your project requires)
+9. Update AGENTS.md files if you discover reusable patterns (see below)
+10. If checks pass, commit ALL changes with message: `feat: [Story ID] - [Story Title]`
+11. Update the PRD to set `passes: true` for the completed story
+12. Append your progress to `progress.txt`
 
 ## Progress Report Format
 

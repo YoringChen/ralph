@@ -1,8 +1,38 @@
-# Ralph
+# Ralph (Fork by YoringChen)
 
 ![Ralph](ralph.webp)
 
 Ralph is an autonomous AI agent loop that runs AI coding tools ([Amp](https://ampcode.com) or [Claude Code](https://docs.anthropic.com/en/docs/claude-code)) repeatedly until all PRD items are complete. Each iteration is a fresh instance with clean context. Memory persists via git history, `progress.txt`, and `prd.json`.
+
+## Changes from Original Version
+
+This fork includes several enhancements to improve the user experience:
+
+### Enhanced UI and UX
+- **Pretty terminal output** with borders, emojis, and color formatting
+- **Real-time status display** showing completed/pending stories
+- **Interactive prompts** asking for confirmation before starting and between iterations
+- **Non-interactive mode** support with `--no-prompt` flag
+
+### Status Tracking
+- **`.ralph-status` file** for real-time status monitoring
+- **Status refresh in background** using `fswatch` (fallback to polling)
+- **Log file** at `.ralph-output.log` for debugging and live viewing
+
+### Working Directory Improvements
+- **Script directory separation**: `ralph.sh`, `prompt.md`, `CLAUDE.md` stay with the plugin
+- **Project directory**: `prd.json`, `progress.txt` created in current working directory
+- **Prerequisite check**: Verifies `prd.json` exists before starting
+
+### Updated Defaults
+- **Default tool changed** from `amp` to `claude`
+- **PRD skill updated** to use `AskUserQuestion` tool instead of lettered options (A/B/C/D)
+
+### Additional Features
+- **PRD summary at startup** showing project, branch, and story counts
+- **Archive functionality** preserved and enhanced with better messaging
+- **Cleanup on exit** removing temporary status files
+- **Suggestions for continuing** after max iterations reached
 
 Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 
@@ -232,8 +262,45 @@ After copying `prompt.md` (for Amp) or `CLAUDE.md` (for Claude Code) to your pro
 
 Ralph automatically archives previous runs when you start a new feature (different `branchName`). Archives are saved to `archive/YYYY-MM-DD-feature-name/`.
 
+## Global Installation
+
+### Option 1: Manual Global Install (Recommended)
+
+After installing the plugin via Claude Code marketplace, you can link `ralph.sh` to your PATH:
+
+```bash
+# Find the plugin installation path
+ls -la ~/.claude/plugins/cache/ralph-marketplace/ralph-skills/
+
+# Create a symlink to a directory in your PATH (e.g., /usr/local/bin)
+sudo ln -s ~/.claude/plugins/cache/ralph-marketplace/ralph-skills/*/ralph.sh /usr/local/bin/ralph
+
+# Make sure it's executable
+sudo chmod +x /usr/local/bin/ralph
+```
+
+Or copy it to your bin directory:
+```bash
+cp ~/.claude/plugins/cache/ralph-marketplace/ralph-skills/*/ralph.sh /usr/local/bin/ralph
+chmod +x /usr/local/bin/ralph
+```
+
+### Option 2: Use the Ralph Skill (Coming Soon)
+
+Load the `/ralph` skill and ask it to install globally for you.
+
+### Verify Installation
+
+Test that Ralph is available globally:
+```bash
+which ralph
+ralph --help
+```
+
 ## References
 
 - [Geoffrey Huntley's Ralph article](https://ghuntley.com/ralph/)
 - [Amp documentation](https://ampcode.com/manual)
 - [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code)
+- [Original repository](https://github.com/snarktank/ralph)
+- [This fork](https://github.com/YoringChen/ralph)

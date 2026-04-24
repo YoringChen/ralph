@@ -86,7 +86,7 @@ cp -r skills/ralph ~/.claude/skills/
 Add the Ralph marketplace to Claude Code:
 
 ```bash
-/plugin marketplace add snarktank/ralph
+/plugin marketplace add YoringChen/ralph
 ```
 
 Then install the skills:
@@ -98,6 +98,7 @@ Then install the skills:
 Available skills after installation:
 - `/prd` - Generate Product Requirements Documents
 - `/ralph` - Convert PRDs to prd.json format
+- `/install-ralph` - Install Ralph globally
 
 Skills are automatically invoked when you ask Claude to:
 - "create a prd", "write prd for", "plan this feature"
@@ -264,9 +265,21 @@ Ralph automatically archives previous runs when you start a new feature (differe
 
 ## Global Installation
 
-### Option 1: Manual Global Install (Recommended)
+### Option 1: Shell Alias (Recommended, No Sudo Needed)
 
-After installing the plugin via Claude Code marketplace, you can link `ralph.sh` to your PATH:
+After installing the plugin via Claude Code marketplace, add an alias to your shell config:
+
+```bash
+# For zsh users:
+echo 'alias ralph="/Users/yoring/.claude/plugins/cache/ralph-marketplace/ralph-skills/1.0.0/ralph.sh"' >> ~/.zshrc
+source ~/.zshrc
+
+# For bash users:
+echo 'alias ralph="/Users/yoring/.claude/plugins/cache/ralph-marketplace/ralph-skills/1.0.0/ralph.sh"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+### Option 2: Symlink to PATH (Requires Sudo)
 
 ```bash
 # Find the plugin installation path
@@ -285,9 +298,9 @@ cp ~/.claude/plugins/cache/ralph-marketplace/ralph-skills/*/ralph.sh /usr/local/
 chmod +x /usr/local/bin/ralph
 ```
 
-### Option 2: Use the Ralph Skill (Coming Soon)
+### Option 3: Use the Install Skill
 
-Load the `/ralph` skill and ask it to install globally for you.
+Load the `/install-ralph` skill and ask it to install globally for you.
 
 ### Verify Installation
 

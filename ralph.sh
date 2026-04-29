@@ -225,7 +225,6 @@ for i in $(seq 1 $MAX_ITERATIONS); do
 
   # Clear log for this iteration (only keep current story's output)
   > "$OUTPUT_LOG"
-  > "$OUTPUT_LOG.raw"
 
   # Display model info for this iteration
   if [ -n "$PROVIDER_NAME" ] && [ "$PROVIDER_NAME" != "null" ]; then
@@ -255,7 +254,6 @@ for i in $(seq 1 $MAX_ITERATIONS); do
     fi
 
     claude "${CLAUDE_ARGS[@]}" < "$SCRIPT_DIR/CLAUDE.md" 2>/dev/null \
-      | tee "$OUTPUT_LOG.raw" \
       | jq --unbuffered -j '
         if .type == "stream_event" and .event.type == "content_block_delta" then
           .event.delta.text // empty

@@ -181,7 +181,6 @@ Ralph will:
 | `prd.json.example` | Example PRD format for reference |
 | `progress.txt` | Append-only learnings for future iterations |
 | `.ralph-output.log` | Live output log with timestamps (cleared per iteration) |
-| `.ralph-output.log.raw` | Raw stream-json output from Claude Code |
 | `.last-branch` | Tracks last branch name for archive detection |
 | `skills/prd/` | Skill for generating PRDs (works with Amp and Claude Code) |
 | `skills/ralph/` | Skill for converting PRDs to JSON (works with Amp and Claude Code) |

@@ -266,12 +266,12 @@ for i in $(seq 1 $MAX_ITERATIONS); do
           "\n[RESULT] stop_reason=\(.stop_reason) duration=\(.duration_ms)ms\n"
         else empty end
       ' \
-      | awk -W interactive '
-        {
-          cmd = "date +\"%H:%M:%S\""
-          cmd | getline ts
-          close(cmd)
-          print "[" ts "] " $0
+      | perl -MFcntl -e '
+        $| = 1;
+        while (<STDIN>) {
+          chomp;
+          ($s, $m, $h) = localtime;
+          printf "[%02d:%02d:%02d] %s\n", $h, $m, $s, $_;
         }
       ' \
       > "$OUTPUT_LOG"

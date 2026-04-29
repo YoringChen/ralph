@@ -147,8 +147,10 @@ start_status_refresh() {
     # Use fswatch (event-based)
     (
       fswatch -o "$PRD_FILE" | while read -r num; do
-        # Only refresh if this is not the first event (initial fswatch start)
-        if [ "$num" -gt 1 ]; then
+        # Always check actual mtime to avoid duplicate events
+        local current_mtime=$(stat -f "%m" "$PRD_FILE" 2>/dev/null || stat -c "%Y" "$PRD_FILE" 2>/dev/null || echo 0)
+        if [ "$current_mtime" != "$last_mtime" ]; then
+          last_mtime="$current_mtime"
           echo ""
           echo "🔄 [Status updated]"
           display_status

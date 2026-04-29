@@ -48,7 +48,6 @@ PRD_FILE="$WORK_DIR/prd.json"
 PROGRESS_FILE="$WORK_DIR/progress.txt"
 ARCHIVE_DIR="$WORK_DIR/archive"
 LAST_BRANCH_FILE="$WORK_DIR/.last-branch"
-STATUS_FILE="$WORK_DIR/.ralph-status"
 OUTPUT_LOG="$WORK_DIR/.ralph-output.log"
 
 # Check if prd.json exists in current directory
@@ -73,7 +72,6 @@ echo ""
 echo "🛠️  Tool: $TOOL"
 echo "🔄 Max iterations: $MAX_ITERATIONS"
 echo "📂 Working directory: $WORK_DIR"
-echo "💡 Check status anytime: cat $STATUS_FILE"
 echo "💡 View live output: tail -f $OUTPUT_LOG"
 echo ""
 
@@ -180,14 +178,13 @@ start_status_refresh() {
   fi
 }
 
-# Cleanup background process and status file on exit
+# Cleanup background process on exit
 cleanup() {
   if [ -n "$STATUS_PID" ]; then
     # Kill the entire process group to clean up fswatch/loop too
     kill -TERM -"$STATUS_PID" 2>/dev/null || kill "$STATUS_PID" 2>/dev/null || true
     wait "$STATUS_PID" 2>/dev/null || true
   fi
-  rm -f "$STATUS_FILE" 2>/dev/null || true
 }
 
 # Cleanup between iterations

@@ -268,11 +268,24 @@ for i in $(seq 1 $MAX_ITERATIONS); do
       ' \
       | perl -MFcntl -e '
         $| = 1;
-        while (<STDIN>) {
-          chomp;
-          next if /^\s*$/;  # skip empty/whitespace-only lines
+        $line = "";
+        $need_ts = 1;
+        while (sysread(STDIN, $c, 1)) {
+          if ($c eq "\n") {
+            if ($line !~ /^\s*$/) {
+              ($s, $m, $h) = localtime;
+              printf "[%02d:%02d:%02d] %s\n", $h, $m, $s, $line;
+            }
+            $line = "";
+            $need_ts = 1;
+          } else {
+            $line .= $c;
+          }
+        }
+        # Print any remaining content
+        if ($line !~ /^\s*$/) {
           ($s, $m, $h) = localtime;
-          printf "[%02d:%02d:%02d] %s\n", $h, $m, $s, $_;
+          printf "[%02d:%02d:%02d] %s\n", $h, $m, $s, $line;
         }
       ' \
       > "$OUTPUT_LOG"

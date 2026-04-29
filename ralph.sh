@@ -270,6 +270,7 @@ for i in $(seq 1 $MAX_ITERATIONS); do
         $| = 1;
         while (<STDIN>) {
           chomp;
+          next if /^\s*$/;  # skip empty/whitespace-only lines
           ($s, $m, $h) = localtime;
           printf "[%02d:%02d:%02d] %s\n", $h, $m, $s, $_;
         }

@@ -266,6 +266,14 @@ for i in $(seq 1 $MAX_ITERATIONS); do
           "\n[RESULT] stop_reason=\(.stop_reason) duration=\(.duration_ms)ms\n"
         else empty end
       ' \
+      | awk -W interactive '
+        BEGIN { empty = 0 }
+        /^$/ {
+          if (empty == 0) { print; empty = 1 }
+          next
+        }
+        { print; empty = 0 }
+      ' \
       > "$OUTPUT_LOG"
 
     OUTPUT=$(cat "$OUTPUT_LOG")

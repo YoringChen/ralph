@@ -183,7 +183,8 @@ start_status_refresh() {
 # Cleanup background process and status file on exit
 cleanup() {
   if [ -n "$STATUS_PID" ]; then
-    kill "$STATUS_PID" 2>/dev/null || true
+    # Kill the entire process group to clean up fswatch/loop too
+    kill -TERM -"$STATUS_PID" 2>/dev/null || kill "$STATUS_PID" 2>/dev/null || true
     wait "$STATUS_PID" 2>/dev/null || true
   fi
   rm -f "$STATUS_FILE" 2>/dev/null || true
@@ -192,7 +193,8 @@ cleanup() {
 # Cleanup between iterations
 cleanup_iter() {
   if [ -n "$STATUS_PID" ]; then
-    kill "$STATUS_PID" 2>/dev/null || true
+    # Kill the entire process group
+    kill -TERM -"$STATUS_PID" 2>/dev/null || kill "$STATUS_PID" 2>/dev/null || true
     wait "$STATUS_PID" 2>/dev/null || true
   fi
   STATUS_PID=""

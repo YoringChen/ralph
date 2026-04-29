@@ -17,11 +17,13 @@ This fork includes several enhancements to improve the user experience:
 - **Non-interactive mode** support with `--no-prompt` flag
 
 ### Status Tracking
-- **`.ralph-status` file** for real-time status monitoring
 - **Status refresh in background** using `fswatch` (fallback to polling)
 - **Log file** at `.ralph-output.log` for debugging and live viewing
+- **Timestamps** on every log line for debugging
 - **Streamed JSON output** for Claude Code with real-time extraction
 - **Error message extraction** from Claude Code authentication errors
+- **Per-story model/provider config** support via `prd.json`
+- **Better process cleanup** killing entire process groups on exit
 
 ### Working Directory Improvements
 - **Script directory separation**: `ralph.sh`, `prompt.md`, `CLAUDE.md` stay with the plugin
@@ -35,8 +37,9 @@ This fork includes several enhancements to improve the user experience:
 ### Additional Features
 - **PRD summary at startup** showing project, branch, and story counts
 - **Archive functionality** preserved and enhanced with better messaging
-- **Cleanup on exit** removing temporary status files
+- **Cleanup on exit** killing all background processes
 - **Suggestions for continuing** after max iterations reached
+- **Per-iteration log clearing** for cleaner output
 
 Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 
@@ -48,6 +51,8 @@ Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
   - [Amp CLI](https://ampcode.com) (default)
   - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (`npm install -g @anthropic-ai/claude-code`)
 - `jq` installed (`brew install jq` on macOS)
+- `perl` installed (usually pre-installed on macOS/Linux)
+- `fswatch` recommended for real-time status refresh (optional, `brew install fswatch` on macOS)
 - A git repository for your project
 
 ## Setup
@@ -175,6 +180,9 @@ Ralph will:
 | `prd.json` | User stories with `passes` status (the task list) |
 | `prd.json.example` | Example PRD format for reference |
 | `progress.txt` | Append-only learnings for future iterations |
+| `.ralph-output.log` | Live output log with timestamps (cleared per iteration) |
+| `.ralph-output.log.raw` | Raw stream-json output from Claude Code |
+| `.last-branch` | Tracks last branch name for archive detection |
 | `skills/prd/` | Skill for generating PRDs (works with Amp and Claude Code) |
 | `skills/ralph/` | Skill for converting PRDs to JSON (works with Amp and Claude Code) |
 | `skills/ralph-model/` | Skill for changing user story model/provider assignments |

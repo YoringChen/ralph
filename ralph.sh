@@ -260,8 +260,6 @@ for i in $(seq 1 $MAX_ITERATIONS); do
       | jq --unbuffered -j '
         if .type == "stream_event" and .event.type == "content_block_delta" then
           .event.delta.text // empty
-        elif .type == "stream_event" and .event.type == "content_block_stop" then
-          "\n"
         elif .type == "assistant" and .error then
           "\n[ERROR] \(.message.content[0].text // .error)\n"
         elif .type == "result" then

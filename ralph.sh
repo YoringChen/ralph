@@ -267,35 +267,11 @@ for i in $(seq 1 $MAX_ITERATIONS); do
         else empty end
       ' \
       | awk -W interactive '
-        function timestamp() {
-          cmd = "date +\"[%Y-%m-%d %H:%M:%S] \""
+        {
+          cmd = "date +\"%H:%M:%S\""
           cmd | getline ts
           close(cmd)
-          return ts
-        }
-        BEGIN { empty = 0; buffer = "" }
-        {
-          buffer = buffer $0
-          while (match(buffer, /[^\n]*\n/)) {
-            line = substr(buffer, 1, RLENGTH)
-            buffer = substr(buffer, RLENGTH + 1)
-            if (line ~ /^[[:space:]]*$/) {
-              if (empty == 0) {
-                print line
-                empty = 1
-              }
-            } else {
-              printf "%s", timestamp()
-              print line
-              empty = 0
-            }
-          }
-        }
-        END {
-          if (length(buffer) > 0) {
-            printf "%s", timestamp()
-            print buffer
-          }
+          print "[" ts "] " $0
         }
       ' \
       > "$OUTPUT_LOG"

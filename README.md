@@ -2,6 +2,8 @@
 
 ![Ralph](ralph.webp)
 
+**Note**: This is the active working directory (`/Users/yoring/Play/ralph`). The `/Users/yoring/Work/ralph` directory is no longer modified.
+
 Ralph is an autonomous AI agent loop that runs AI coding tools ([Amp](https://ampcode.com) or [Claude Code](https://docs.anthropic.com/en/docs/claude-code)) repeatedly until all PRD items are complete. Each iteration is a fresh instance with clean context. Memory persists via git history, `progress.txt`, and `prd.json`.
 
 ## Changes from Original Version
@@ -18,6 +20,8 @@ This fork includes several enhancements to improve the user experience:
 - **`.ralph-status` file** for real-time status monitoring
 - **Status refresh in background** using `fswatch` (fallback to polling)
 - **Log file** at `.ralph-output.log` for debugging and live viewing
+- **Streamed JSON output** for Claude Code with real-time extraction
+- **Error message extraction** from Claude Code authentication errors
 
 ### Working Directory Improvements
 - **Script directory separation**: `ralph.sh`, `prompt.md`, `CLAUDE.md` stay with the plugin
@@ -98,6 +102,7 @@ Then install the skills:
 Available skills after installation:
 - `/prd` - Generate Product Requirements Documents
 - `/ralph` - Convert PRDs to prd.json format
+- `/ralph-model` - Modify user story model/provider assignments
 - `/install-ralph` - Install Ralph globally
 
 Skills are automatically invoked when you ask Claude to:
@@ -172,6 +177,7 @@ Ralph will:
 | `progress.txt` | Append-only learnings for future iterations |
 | `skills/prd/` | Skill for generating PRDs (works with Amp and Claude Code) |
 | `skills/ralph/` | Skill for converting PRDs to JSON (works with Amp and Claude Code) |
+| `skills/ralph-model/` | Skill for changing user story model/provider assignments |
 | `.claude-plugin/` | Plugin manifest for Claude Code marketplace discovery |
 | `flowchart/` | Interactive visualization of how Ralph works |
 

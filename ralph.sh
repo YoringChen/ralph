@@ -136,7 +136,7 @@ fi
 display_status() {
   echo ""
   echo "📊 Current status:"
-  jq -r '.userStories[] | "  [\(.id)] \(.title) - \(.passes | if . then "✅" else "⏳" end)"' "$PRD_FILE"
+  jq -r '.userStories[] | "  [\(.id)] \(.title) - \(.passes | if . then "✅" else "⏳" end) (\(.model.providerName // "default"))"' "$PRD_FILE"
   echo ""
 }
 
@@ -204,13 +204,6 @@ echo ""
 echo "🚀 Starting Ralph..."
 echo ""
 
-# Initialize log file at script startup (clear previous session)
-echo "=== Ralph Session Started - $(date) ===" > "$OUTPUT_LOG"
-echo "Project: $(jq -r '.project' "$PRD_FILE")" >> "$OUTPUT_LOG"
-echo "Working directory: $WORK_DIR" >> "$OUTPUT_LOG"
-echo "Tool: $TOOL | Max iterations: $MAX_ITERATIONS" >> "$OUTPUT_LOG"
-echo "==========================================" >> "$OUTPUT_LOG"
-
 for i in $(seq 1 $MAX_ITERATIONS); do
   echo ""
   echo "╔══════════════════════════════════════════════════════════════╗"
@@ -225,8 +218,24 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   # Start background status refresh
   start_status_refresh
 
-  # Add iteration separator to log
-  echo -e "\n\n=== Iteration $i of $MAX_ITERATIONS - $(date) ===" >> "$OUTPUT_LOG"
+  # Read current story's model config (highest priority story with passes: false)
+  STORY_ID=$(jq -r '[.userStories[] | select(.passes == false)] | sort_by(.priority) | .[0].id // empty' "$PRD_FILE")
+  STORY_TITLE=$(jq -r '[.userStories[] | select(.passes == false)] | sort_by(.priority) | .[0].title // empty' "$PRD_FILE")
+  PROVIDER_NAME=$(jq -r '[.userStories[] | select(.passes == false)] | sort_by(.priority) | .[0].model.providerName // empty' "$PRD_FILE")
+  SETTINGS_JSON=$(jq -c '[.userStories[] | select(.passes == false)] | sort_by(.priority) | .[0].model.settingsConfig // empty' "$PRD_FILE")
+
+  # Clear log for this iteration (only keep current story's output)
+  > "$OUTPUT_LOG"
+  > "$OUTPUT_LOG.raw"
+
+  # Display model info for this iteration
+  if [ -n "$PROVIDER_NAME" ] && [ "$PROVIDER_NAME" != "null" ]; then
+    echo "🤖 Model: $PROVIDER_NAME"
+    echo "📖 Story: [$STORY_ID] $STORY_TITLE"
+  else
+    echo "🤖 Model: (default)"
+    echo "📖 Story: [$STORY_ID] $STORY_TITLE"
+  fi
 
   # Run the selected tool with the ralph prompt
   echo "🤖 Calling $TOOL..."
@@ -238,10 +247,29 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   set +e
 
   if [[ "$TOOL" == "amp" ]]; then
-    cat "$SCRIPT_DIR/prompt.md" | amp --dangerously-allow-all 2>&1 | tee -a "$OUTPUT_LOG"
+    cat "$SCRIPT_DIR/prompt.md" | amp --dangerously-allow-all 2>&1 | tee "$OUTPUT_LOG"
     OUTPUT=$(cat "$OUTPUT_LOG")
   else
-    claude --dangerously-skip-permissions --print < "$SCRIPT_DIR/CLAUDE.md" 2>&1 | tee -a "$OUTPUT_LOG"
+    CLAUDE_ARGS=(--dangerously-skip-permissions --print --output-format stream-json --verbose --include-partial-messages)
+    if [ -n "$SETTINGS_JSON" ] && [ "$SETTINGS_JSON" != "null" ]; then
+      CLAUDE_ARGS=(--settings "$SETTINGS_JSON" "${CLAUDE_ARGS[@]}")
+    fi
+
+    claude "${CLAUDE_ARGS[@]}" < "$SCRIPT_DIR/CLAUDE.md" 2>/dev/null \
+      | tee "$OUTPUT_LOG.raw" \
+      | jq --unbuffered -j '
+        if .type == "stream_event" and .event.type == "content_block_delta" then
+          .event.delta.text // empty
+        elif .type == "stream_event" and .event.type == "content_block_stop" then
+          "\n"
+        elif .type == "assistant" and .error then
+          "\n[ERROR] \(.message.content[0].text // .error)\n"
+        elif .type == "result" then
+          "\n[RESULT] stop_reason=\(.stop_reason) duration=\(.duration_ms)ms\n"
+        else empty end
+      ' \
+      > "$OUTPUT_LOG"
+
     OUTPUT=$(cat "$OUTPUT_LOG")
   fi
 
@@ -257,7 +285,6 @@ for i in $(seq 1 $MAX_ITERATIONS); do
     echo ""
     echo "🎉 Ralph completed all tasks!"
     echo "✅ Completed at iteration $i of $MAX_ITERATIONS"
-    echo -e "\n=== Ralph Session Completed - $(date) ===" >> "$OUTPUT_LOG"
     exit 0
   fi
 
@@ -283,5 +310,4 @@ echo ""
 echo "⚠️ Ralph reached max iterations ($MAX_ITERATIONS) without completing all tasks."
 echo "📝 Check $PROGRESS_FILE for status."
 echo "💡 Tip: Run 'ralph' again to continue, or increase max iterations: 'ralph 20'"
-echo -e "\n=== Ralph Session Stopped - Max iterations reached - $(date) ===" >> "$OUTPUT_LOG"
 exit 1
